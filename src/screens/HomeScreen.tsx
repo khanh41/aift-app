@@ -1,10 +1,10 @@
 import React from "react";
 import Background from "../components/Background";
-import Logo from "../components/Logo";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Paragraph from "../components/Paragraph";
 import { RootStackScreenProps } from "../types/types";
+import { Logo } from "../components/Images";
 
 export default function HomeScreen({
   navigation,
