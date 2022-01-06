@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Background from "../components/Background";
-import Logo from "../components/Logo";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import TextInput from "../components/TextInput";
@@ -13,6 +12,7 @@ import {
   nameValidator,
 } from "../core/utils";
 import { RootStackScreenProps } from "../types/types";
+import { Logo } from "../components/Images";
 
 export default function RegisterScreen({
   navigation,

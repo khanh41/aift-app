@@ -3,12 +3,12 @@ import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { emailValidator } from "../core/utils";
 import Background from "../components/Background";
 import BackButton from "../components/BackButton";
-import Logo from "../components/Logo";
 import Header from "../components/Header";
 import TextInput from "../components/TextInput";
 import { theme } from "../core/theme";
 import Button from "../components/Button";
 import { RootStackScreenProps } from "../types/types";
+import { Logo } from "../components/Images";
 
 export default function ForgotPasswordScreen({
   navigation,

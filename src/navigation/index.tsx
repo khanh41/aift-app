@@ -13,15 +13,15 @@ import { ColorSchemeName, Pressable } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import { Dashboard, ForgotPasswordScreen, HomeScreen, LoginScreen, RegisterScreen } from '../screens';
+import DoExerciseScreen from '../screens/DoExerciseScreen';
+import ExercisesScreen from '../screens/ExercisesScreen';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types/types';
 import LinkingConfiguration from './LinkingConfiguration';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
-  colorScheme='dark'
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -49,6 +49,10 @@ function RootNavigator() {
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
+      
+      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+        <Stack.Screen name="DoExercise" component={DoExerciseScreen} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 }
@@ -64,15 +68,15 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Exercises"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}>
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Home',
+        name="Exercises"
+        component={ExercisesScreen}
+        options={({ navigation }: RootTabScreenProps<'Exercises'>) => ({
+          title: 'Exercises',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Pressable

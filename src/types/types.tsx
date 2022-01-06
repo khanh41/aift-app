@@ -25,13 +25,14 @@ export type RootStackParamList = {
   BottomTabNavigator: undefined;
   Modal: undefined;
   NotFound: undefined;
+  DoExercise: undefined
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type RootTabParamList = {
-  TabOne: undefined;
+  Exercises: undefined
   TabTwo: undefined;
 };
 
