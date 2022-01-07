@@ -40,7 +40,7 @@ const PreviewLayout = ({
       {values.map((value) => (
         <TouchableOpacity
           key={value}
-          onPress={() => navigation.navigate("DoExercise")}
+          onPress={() => navigation.navigate("DoExercise", {name: value})}
           style={[styles.button, selectedValue === value && styles.selected]}
         >
           {Exercise(value)}
