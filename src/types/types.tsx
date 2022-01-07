@@ -7,6 +7,8 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import {
   CompositeScreenProps,
   NavigatorScreenParams,
+  RouteProp,
+  useRoute,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -25,14 +27,14 @@ export type RootStackParamList = {
   BottomTabNavigator: undefined;
   Modal: undefined;
   NotFound: undefined;
-  DoExercise: undefined
+  DoExercise: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type RootTabParamList = {
-  Exercises: undefined
+  Exercises: undefined;
   TabTwo: undefined;
 };
 
@@ -41,3 +43,9 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
     BottomTabScreenProps<RootTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >;
+
+export type NavigationRoute = {
+  Detail: {
+    name: string;
+  };
+};
