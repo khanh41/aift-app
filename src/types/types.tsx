@@ -27,7 +27,12 @@ export type RootStackParamList = {
   BottomTabNavigator: undefined;
   Modal: undefined;
   NotFound: undefined;
-  DoExercise: undefined;
+  DoExerciseStart: { name: string };
+  DoExerciseInprocess: {
+    name: string;
+    numberStep: number;
+    currentStep: number;
+  };
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

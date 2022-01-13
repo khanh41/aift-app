@@ -23,6 +23,7 @@ import {
   LoginScreen,
   RegisterScreen,
 } from "../screens";
+import DoExerciseInprocessScreen from "../screens/DoExerciseInprocessScreen";
 import DoExerciseStartScreen from "../screens/DoExerciseStartScreen";
 import ExercisesScreen from "../screens/ExercisesScreen";
 import ModalScreen from "../screens/ModalScreen";
@@ -91,19 +92,21 @@ function RootNavigator() {
         options={{ title: "Oops!" }}
       />
 
-      <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
+      <Stack.Screen name="Modal" component={ModalScreen} />
 
-      <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen
-          name="DoExercise"
-          component={DoExerciseStartScreen}
-          options={({ route }: { route: any }) => ({
-            title: route.params.name,
-          })}
-        />
-      </Stack.Group>
+      <Stack.Screen
+        name="DoExerciseStart"
+        component={DoExerciseStartScreen}
+        options={({ route }: { route: any }) => ({
+          title: route.params.name,
+        })}
+      />
+
+      <Stack.Screen
+        name="DoExerciseInprocess"
+        component={DoExerciseInprocessScreen}
+        options={{ title: "Upload Image" }}
+      />
     </Stack.Navigator>
   );
 }
