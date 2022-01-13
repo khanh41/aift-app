@@ -1,68 +1,152 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import { Platform, StyleSheet } from "react-native";
-import { Button } from "react-native-paper";
-import EditScreenInfo from "../components/ExerciseInfor";
-import { Text, View } from "../components/Themed";
-import { NavigationRoute, RootStackScreenProps } from "../types/types";
+import React, { useEffect, useState } from "react";
+import {
+  Platform,
+  StyleSheet,
+  Image,
+  Text,
+  Button,
+  TouchableOpacity,
+} from "react-native";
+import { View } from "../components/Themed";
+import { RootStackScreenProps } from "../types/types";
+import * as ImagePicker from "expo-image-picker";
+import { firebaseImageUrl, replaceText } from "../constants/API";
+import { FontAwesome } from "@expo/vector-icons";
+import StepIndicator from "react-native-step-indicator";
 
-export default function DoExerciseScreen({
+export default function DoExerciseInprocessScreen({
+  route,
   navigation,
-}: RootStackScreenProps<"DoExercise">) {
-  const infor =
-    "A pushup isn't just a chest exercise. It's a position of full body tension (or it should be). So start in a good plank: shoulders squeezed, glutes tight, abs tight. Upload your form and we'll fix it to make sure you're in the right place.";
+}: RootStackScreenProps<"DoExerciseInprocess">) {
+  const showImagePicker = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  const [introSentence, setIntroSentence] = useState(infor);
-  const route = useRoute<RouteProp<NavigationRoute, "Detail">>();
-  console.log(route.params.name);
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this appp to access your photos!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync();
+
+    if (!result.cancelled) {
+      setPickedImagePath(result.uri);
+      setErrorText("");
+    }
+  };
+
+  const starComponent = (numStar: number) => {
+    let starOutput = [];
+    for (let index = 0; index < numStar; index++) {
+      starOutput.push(<FontAwesome name="star" size={30} color="yellow" />);
+    }
+
+    for (let index = numStar; index < 5; index++) {
+      starOutput.push(<FontAwesome name="star" size={30} color="black" />);
+    }
+
+    return starOutput;
+  };
+
+  const [currentStep, setCurrentStep] = useState<number>(
+    route.params.currentStep
+  );
+  const [numberStep, setNumberStep] = useState<number>(route.params.numberStep);
+  const [pickedImagePath, setPickedImagePath] = useState<string>("");
+  const [isSubmit, setIsSubmit] = useState<boolean>(true);
+  const [errorText, setErrorText] = useState<string>("");
+  const [numStar, setNumStar] = useState<number>(0);
+  const [resultImage, setResultImage] = useState<string>("");
+
+  let value = route.params.name;
+  value = value.toLowerCase().split(" ").join("");
+  const [imageUrl, setImageUrl] = useState(
+    firebaseImageUrl.replace(replaceText, value + currentStep)
+  );
+
+  useEffect(() => {
+    setIsSubmit(true);
+    setImageUrl(firebaseImageUrl.replace(replaceText, value + currentStep));
+    setPickedImagePath("");
+  }, [currentStep]);
+
+  const submitPress = () => {
+    if (pickedImagePath != "") {
+      setIsSubmit(false);
+      setErrorText("");
+
+      // Call api and get link image, number star
+      setResultImage(pickedImagePath);
+      setNumStar(3);
+    } else {
+      setErrorText("Please choose a image");
+    }
+  };
+
+  const getLayout = () => {
+    if (isSubmit)
+      return (
+        <View>
+          <StepIndicator
+            stepCount={numberStep}
+            currentPosition={currentStep - 1}
+          />
+          <View style={styles.containerImage}>
+            <Image source={{ uri: imageUrl }} style={styles.imageArea} />
+            <Text style={{ paddingTop: 20 }}>Your Image:</Text>
+
+            <TouchableOpacity
+              key={value}
+              onPress={showImagePicker}
+              style={styles.imageArea}
+            >
+              {pickedImagePath !== "" ? (
+                <Image
+                  source={{ uri: pickedImagePath }}
+                  style={{ width: "100%", height: 150 }}
+                />
+              ) : (
+                <Text style={styles.buttonLabel}>Choose Image</Text>
+              )}
+            </TouchableOpacity>
+            {errorText != "" && (
+              <Text style={styles.errorText}>{errorText}</Text>
+            )}
+          </View>
+          <View style={styles.fixToText}>
+            <Button title="Submit" color="#6ec965" onPress={submitPress} />
+          </View>
+        </View>
+      );
+
+    return (
+      <View>
+        <View style={styles.containerImage}>
+          <Image source={{ uri: resultImage }} style={styles.imageArea} />
+          <View style={styles.starIcon}>{starComponent(numStar)}</View>
+          <View style={styles.fixToText}>
+            {currentStep >= numberStep ? (
+              <Button
+                title="Finish"
+                color="#e0c475"
+                onPress={() => navigation.goBack()}
+              />
+            ) : (
+              <Button
+                title="Next"
+                onPress={() => setCurrentStep(currentStep + 1)}
+              />
+            )}
+          </View>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Information</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path={introSentence} />
-
-      <View style={styles.paddingButton} />
-
-      <Button
-        icon="image-plus"
-        mode="contained"
-        color="#88c292"
-        style={styles.buttonStart}
-        onPress={() => navigation.navigate("Root")}
-      >
-        By Image
-      </Button>
-
-      <View style={styles.paddingButton} />
-
-      <Button
-        icon="video-plus"
-        mode="contained"
-        color="#88c292"
-        style={styles.buttonStart}
-        onPress={() => navigation.navigate("NotFound")}
-      >
-        By Video
-      </Button>
-
-      <View style={styles.paddingButton} />
-
-      <Button
-        icon="webcam"
-        mode="contained"
-        color="#88c292"
-        style={styles.buttonStart}
-        onPress={() => navigation.navigate("NotFound")}
-      >
-        Live Camera
-      </Button>
-
+      {getLayout()}
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
@@ -72,23 +156,36 @@ export default function DoExerciseScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "center",
+    marginHorizontal: 16,
+  },
+  containerImage: {
+    alignItems: "center",
+  },
+  imageArea: {
+    width: "80%",
+    height: 150,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 2,
+    backgroundColor: "#e3dbd5",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  fixToText: {
+    justifyContent: "space-between",
+    paddingTop: 30,
+    paddingRight: 40,
+    paddingLeft: 40,
   },
-  separator: {
-    marginVertical: 10,
-    height: 1,
-    width: "80%",
+  starIcon: {
+    paddingTop: 30,
+    flexDirection: "row",
   },
-  buttonStart: {
-    width: 150,
+  buttonLabel: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "blue",
   },
-
-  paddingButton: {
-    paddingTop: 20,
+  errorText: {
+    color: "red",
   },
 });
