@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React from "react";
 import { Platform, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 import EditScreenInfo from "../components/ExerciseInfor";
@@ -10,16 +10,13 @@ export default function DoExerciseStartScreen({
   route,
   navigation,
 }: RootStackScreenProps<"DoExerciseStart">) {
-  const [introSentence, setIntroSentence] = useState("");
+  const introSentence: string = route.params.description;
 
   const step = {
     name: route.params.name,
-    numberStep: 2,
+    numberStep: route.params.numStep,
     currentStep: 1,
   };
-
-  const infor =
-    "Aa pushup isn't just a chest exercise. It's a position of full body tension (or it should be). So start in a good plank: shoulders squeezed, glutes tight, abs tight. Upload your form and we'll fix it to make sure you're in the right place.";
 
   return (
     <View style={styles.container}>
@@ -29,7 +26,7 @@ export default function DoExerciseStartScreen({
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <EditScreenInfo path={infor} />
+      <EditScreenInfo path={introSentence} />
 
       <View style={styles.paddingButton} />
 
@@ -50,7 +47,7 @@ export default function DoExerciseStartScreen({
         mode="contained"
         color="#88c292"
         style={styles.buttonStart}
-        onPress={() => navigation.navigate("NotFound")}
+        onPress={() => navigation.navigate("DoExerciseInprocessVideo", { name: route.params.name, })}
       >
         By Video
       </Button>
@@ -62,7 +59,7 @@ export default function DoExerciseStartScreen({
         mode="contained"
         color="#88c292"
         style={styles.buttonStart}
-        onPress={() => navigation.navigate("NotFound")}
+        onPress={() => navigation.navigate("DoExerciseInprocessStream", { name: route.params.name })}
       >
         Live Camera
       </Button>

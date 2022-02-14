@@ -4,17 +4,13 @@
  */
 
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import {
-  CompositeScreenProps,
-  NavigatorScreenParams,
-  RouteProp,
-  useRoute,
-} from "@react-navigation/native";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { IExercise } from "./ResponseType";
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList { }
   }
 }
 
@@ -27,11 +23,17 @@ export type RootStackParamList = {
   BottomTabNavigator: undefined;
   Modal: undefined;
   NotFound: undefined;
-  DoExerciseStart: { name: string };
+  DoExerciseStart: IExercise;
   DoExerciseInprocess: {
     name: string;
     numberStep: number;
     currentStep: number;
+  };
+  DoExerciseInprocessVideo: {
+    name: string;
+  };
+  DoExerciseInprocessStream: {
+    name: string;
   };
 };
 

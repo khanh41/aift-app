@@ -24,6 +24,8 @@ import {
   RegisterScreen,
 } from "../screens";
 import DoExerciseInprocessScreen from "../screens/DoExerciseInprocessScreen";
+import DoExerciseInprocessScreenStream from "../screens/DoExerciseInprocessScreenStream";
+import DoExerciseInprocessScreenVideo from "../screens/DoExerciseInprocessScreenVideo";
 import DoExerciseStartScreen from "../screens/DoExerciseStartScreen";
 import ExercisesScreen from "../screens/ExercisesScreen";
 import ModalScreen from "../screens/ModalScreen";
@@ -60,7 +62,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator>
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Root"
         component={HomeScreen}
         options={{ headerShown: false }}
@@ -79,7 +81,7 @@ function RootNavigator() {
         name="ForgotPassword"
         component={ForgotPasswordScreen}
         options={{ headerShown: false }}
-      /> */}
+      />
       <Stack.Screen
         name="BottomTabNavigator"
         component={BottomTabNavigator}
@@ -107,6 +109,18 @@ function RootNavigator() {
         component={DoExerciseInprocessScreen}
         options={{ title: "Upload Image" }}
       />
+
+      <Stack.Screen
+        name="DoExerciseInprocessVideo"
+        component={DoExerciseInprocessScreenVideo}
+        options={{ title: "Video" }}
+      />
+
+      <Stack.Screen
+        name="DoExerciseInprocessStream"
+        component={DoExerciseInprocessScreenStream}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
@@ -132,7 +146,7 @@ function BottomTabNavigator() {
         component={ExercisesScreen}
         options={({ navigation }: RootTabScreenProps<"Exercises">) => ({
           title: "Exercises",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="fire" color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate("Modal")}
@@ -154,8 +168,8 @@ function BottomTabNavigator() {
         name="TabTwo"
         component={TabTwoScreen}
         options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "User",
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
     </BottomTab.Navigator>
