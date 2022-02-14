@@ -1,1 +1,1 @@
-# aift-frontend
+# AI Fitness Trainer - Application
