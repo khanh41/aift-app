@@ -1,62 +1,64 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import { Exercise, exerciseList } from "../components/Images";
+import { Exercise } from "../components/Images";
+import ExerciseService, {
+  IExerciseResponse,
+} from "../services/ExerciseService";
+import { IExercise } from "../types/ResponseType";
 import { RootTabScreenProps } from "../types/types";
-
-interface PreviewInterface {
-  navigation: any
-  label: string;
-  values: string[];
-  selectedValue: string;
-  setSelectedValue: any;
-}
 
 export default function ExercisesScreen({
   navigation,
 }: RootTabScreenProps<"Exercises">) {
-  const [alignContent, setAlignContent] = useState("flex-start");
+  const [exerciseList, setExerciseList] = useState<IExercise[]>([]);
+  const [hasError, setErrorFlag] = useState(false);
 
-  return (
-    <PreviewLayout
-      navigation={navigation}
-      label="alignContent"
-      selectedValue={alignContent}
-      values={exerciseList}
-      setSelectedValue={setAlignContent}
-    ></PreviewLayout>
-  );
-}
+  const fetchAllExercises = async () => {
+    try {
+      const response = await ExerciseService.getAll();
+      if (response.status === 200) {
+        const data: IExerciseResponse = response.data;
+        setExerciseList(data["data"]);
+        return;
+      } else {
+        console.log("erorr1");
+        throw new Error("Failed to fetch users");
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log("Data fetching cancelled");
+      } else {
+        console.log(error);
+        setErrorFlag(true);
+      }
+    }
+  };
 
-const PreviewLayout = ({
-  navigation,
-  label,
-  values,
-  selectedValue,
-  setSelectedValue,
-}: PreviewInterface) => (
-  <View style={{ padding: 10, flex: 1 }}>
-    <Text>Sort</Text>
-    <View style={styles.row}>
-      {values.map((value) => (
-        <TouchableOpacity
-          key={value}
-          onPress={() => navigation.navigate("DoExerciseStart", {name: value})}
-          style={[styles.button, selectedValue === value && styles.selected]}
-        >
-          {Exercise(value)}
-          <Text
-            style={[
-              styles.buttonLabel,
-              selectedValue === value && styles.selectedLabel,
-            ]}
+  useEffect(() => {
+    fetchAllExercises();
+  }, []);
+
+  const getExercisesName = () => {
+    return (
+      <View style={styles.row}>
+        {exerciseList.map((value: IExercise) => (
+          <TouchableOpacity
+            key={value.name}
+            onPress={() => navigation.navigate("DoExerciseStart", value)}
+            style={[styles.button, styles.selected]}
           >
-            {value}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  </View>
-);
+            {Exercise(value.name)}
+            <Text style={[styles.buttonLabel, styles.selectedLabel]}>
+              {value.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
+  return <View style={{ padding: 10, flex: 1 }}>{getExercisesName()}</View>;
+}
 
 const styles = StyleSheet.create({
   row: {
