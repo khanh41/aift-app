@@ -8,14 +8,16 @@ import {
   Button,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { View } from "../components/Themed";
 import { RootStackScreenProps } from "../types/types";
 import * as ImagePicker from "expo-image-picker";
-import { firebaseImageUrl, replaceText } from "../constants/API";
-import { FontAwesome } from "@expo/vector-icons";
+import { firebaseImageUrl, replaceText, videoUrl } from "../constants/API";
 import ExerciseService from "../services/ExerciseService";
-import ImageViewer from "react-native-image-zoom-viewer";
+import { Video } from "expo-av";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 export default function DoExerciseInprocessScreenVideo({
   route,
@@ -40,25 +42,11 @@ export default function DoExerciseInprocessScreenVideo({
     }
   };
 
-  const starComponent = (numStar: number) => {
-    let starOutput = [];
-    for (let index = 0; index < numStar; index++) {
-      starOutput.push(<FontAwesome name="star" size={30} color="yellow" />);
-    }
-
-    for (let index = numStar; index < 5; index++) {
-      starOutput.push(<FontAwesome name="star" size={30} color="black" />);
-    }
-
-    return starOutput;
-  };
-
   const [pickedImagePath, setPickedImagePath] = useState<string>("");
   const [isSubmit, setIsSubmit] = useState<boolean>(true);
   const [errorText, setErrorText] = useState<string>("");
-  const [numStar, setNumStar] = useState<number>(0);
-  const [resultImage, setResultImage] = useState<string>("");
-  const [visibleImage, setVisibleImage] = useState<boolean>(false);
+  const [resultVideo, setResultVideo] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   let value = route.params.name;
   value = value.toLowerCase().split(" ").join("");
@@ -67,8 +55,7 @@ export default function DoExerciseInprocessScreenVideo({
   );
 
   const predictForm = async (nameStep: string) => {
-    nameStep = nameStep.replace(" ", "").toLowerCase();
-    const response = await ExerciseService.predictForm(
+    const response = await ExerciseService.predictVideo(
       nameStep,
       pickedImagePath
     );
@@ -80,27 +67,36 @@ export default function DoExerciseInprocessScreenVideo({
     setPickedImagePath("");
   }, []);
 
-  const showImageResult = () => {
-    setVisibleImage(true);
-  };
-
   const submitPress = async () => {
     if (pickedImagePath != "") {
       try {
+        setIsLoading(true);
         // Call api and get link image, number star
-        const predicted_image: string = await predictForm(route.params.name);
-        setResultImage("data:image/png;base64," + predicted_image);
+        const video_id: string = await predictForm(route.params.name);
+        setResultVideo(video_id);
+        console.log(resultVideo);
 
         setIsSubmit(false);
         setErrorText("");
-        setNumStar(3);
+        setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         console.log(error);
       }
     } else {
       setErrorText("Please choose a video");
     }
   };
+
+  function setOrientation() {
+    if (Dimensions.get("window").height > Dimensions.get("window").width) {
+      //Device is in portrait mode, rotate to landscape mode.
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+    } else {
+      //Device is in landscape mode, rotate to portrait mode.
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    }
+  }
 
   const getLayout = () => {
     if (isSubmit)
@@ -129,26 +125,31 @@ export default function DoExerciseInprocessScreenVideo({
             )}
           </View>
           <View style={styles.fixToText}>
-            <Button title="Submit" color="#6ec965" onPress={submitPress} />
+            {isLoading && <ActivityIndicator size="large" color="#00ff00" />}
+
+            {!isLoading && (
+              <Button title="Submit" color="#6ec965" onPress={submitPress} />
+            )}
           </View>
         </View>
       );
 
+    console.log(`${videoUrl}${resultVideo}`);
+
     return (
-      <View>
-        <View style={styles.containerImage}>
-          <TouchableOpacity onPress={showImageResult}>
-            <Image source={{ uri: resultImage }} style={styles.imageArea} />
-          </TouchableOpacity>
-          <View style={styles.starIcon}>{starComponent(numStar)}</View>
-          <View style={styles.fixToText}>
-            <Button
-              title="Finish"
-              color="#e0c475"
-              onPress={() => navigation.goBack()}
-            />
-          </View>
-        </View>
+      <View style={styles.container2}>
+        <Video
+          source={{
+            uri: `${videoUrl}${resultVideo}`,
+          }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={true}
+          useNativeControls
+          onFullscreenUpdate={setOrientation}
+          resizeMode="cover"
+          style={{ width: Dimensions.get("window").width, height: 200 }}
+        />
       </View>
     );
   };
@@ -156,20 +157,6 @@ export default function DoExerciseInprocessScreenVideo({
   return (
     <View style={styles.container}>
       {getLayout()}
-      <Modal visible={visibleImage} transparent={true}>
-        <ImageViewer
-          imageUrls={[
-            {
-              url: resultImage,
-            },
-          ]}
-          onCancel={() => setVisibleImage(false)}
-          onSwipeDown={() => setVisibleImage(false)}
-          enableSwipeDown
-          enableImageZoom
-        />
-      </Modal>
-
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
@@ -181,6 +168,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     marginHorizontal: 16,
+  },
+  container2: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   containerImage: {
     alignItems: "center",
@@ -211,5 +204,12 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
+  },
+  backgroundVideo: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 });

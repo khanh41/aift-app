@@ -74,13 +74,20 @@ export default function DoExerciseInprocessScreen({
     firebaseImageUrl.replace(replaceText, value + currentStep)
   );
 
-  const predictForm = async (nameStep: string) => {
-    nameStep = nameStep.replace(" ", "").toLowerCase();
-    const response = await ExerciseService.predictForm(
-      nameStep,
-      pickedImagePath
-    );
-    return response.data.data;
+  const predictForm = async () => {
+    const nameStep = route.params.name;
+    const exerciseCode =
+      nameStep.replace(" ", "").toLowerCase() + currentStep.toString();
+    try {
+      const response = await ExerciseService.predictForm(
+        exerciseCode,
+        nameStep,
+        pickedImagePath
+      );
+      return response.data.data;
+    } catch {
+      setErrorText("Please clear cut image and right direction");
+    }
   };
 
   useEffect(() => {
@@ -97,8 +104,7 @@ export default function DoExerciseInprocessScreen({
     if (pickedImagePath != "") {
       try {
         // Call api and get link image, number star
-        const nameStep = route.params.name + currentStep.toString();
-        const predicted_image: string = await predictForm(nameStep);
+        const predicted_image: string = await predictForm();
         setResultImage("data:image/png;base64," + predicted_image);
 
         setIsSubmit(false);
@@ -116,10 +122,12 @@ export default function DoExerciseInprocessScreen({
     if (isSubmit)
       return (
         <View>
-          <StepIndicator
-            stepCount={numberStep}
-            currentPosition={currentStep - 1}
-          />
+          <View style={styles.step}>
+            <StepIndicator
+              stepCount={numberStep}
+              currentPosition={currentStep - 1}
+            />
+          </View>
           <View style={styles.containerImage}>
             <Image source={{ uri: imageUrl }} style={styles.imageArea} />
             <Text style={{ paddingTop: 20 }}>Your Image:</Text>
@@ -232,5 +240,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
+  },
+  step: {
+    paddingBottom: 30,
   },
 });

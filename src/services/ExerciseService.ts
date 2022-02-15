@@ -29,7 +29,7 @@ export class ExerciseService {
     return axios.delete<any>(`/tutorials/${id}`);
   }
 
-  predictForm(exerciseName: string, image_file: any) {
+  predictForm(exerciseCode: string, exerciseName: string, image_file: any) {
     const photo = {
       uri: image_file,
       type: "image/jpeg",
@@ -39,7 +39,22 @@ export class ExerciseService {
     formData.append("file", photo);
 
     return axios.post<IResponseAPI>(
-      `${API_URL}/predict-form?exercise_name=${exerciseName}`,
+      `${API_URL}/predict-form?exercise_code=${exerciseCode}&exercise_name=${exerciseName}`,
+      formData
+    );
+  }
+
+  predictVideo(exerciseName: string, file: any) {
+    const video = {
+      uri: file,
+      type: "video/mp4",
+      name: "video.mp4",
+    };
+    const formData = new FormData();
+    formData.append("file", video);
+
+    return axios.post<IResponseAPI>(
+      `${API_URL}/predict-video?exercise_name=${exerciseName}`,
       formData
     );
   }
