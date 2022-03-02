@@ -10,28 +10,39 @@ import {
   emailValidator,
   passwordValidator,
   nameValidator,
+  confirmPasswordValidator,
 } from "../core/utils";
 import { RootStackScreenProps } from "../types/types";
 import { Logo } from "../components/Images";
+import AuthService from "../services/AuthService";
 
 export default function RegisterScreen({
   navigation,
 }: RootStackScreenProps<"Register">) {
-  const [name, setName] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
+  const [confirmPassword, setConfirmPassword] = useState({
+    value: "",
+    error: "",
+  });
   const [password, setPassword] = useState({ value: "", error: "" });
 
-  const _onSignUpPressed = () => {
-    const nameError = nameValidator(name.value);
+  const _onSignUpPressed = async () => {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
+    const confirmPasswordError = confirmPasswordValidator(
+      password.value,
+      confirmPassword.value
+    );
 
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError });
+    if (emailError || passwordError || confirmPasswordError) {
+      setConfirmPassword({ ...confirmPassword, error: confirmPasswordError });
       setEmail({ ...email, error: emailError });
       setPassword({ ...password, error: passwordError });
       return;
     }
+
+    await AuthService.register(email.value, password.value);
+    // await AuthService.login(email.value, password.value)
 
     navigation.navigate("BottomTabNavigator");
   };
@@ -43,16 +54,6 @@ export default function RegisterScreen({
       <Logo />
 
       <Header>Create Account</Header>
-
-      <TextInput
-        label="Name"
-        returnKeyType="next"
-        value={name.value}
-        onChangeText={(text) => setName({ value: text, error: "" })}
-        error={!!name.error}
-        errorText={name.error}
-        autoComplete="off"
-      />
 
       <TextInput
         label="Email"
@@ -74,6 +75,17 @@ export default function RegisterScreen({
         onChangeText={(text) => setPassword({ value: text, error: "" })}
         error={!!password.error}
         errorText={password.error}
+        autoComplete="off"
+        secureTextEntry
+      />
+
+      <TextInput
+        label="Confirm Password"
+        returnKeyType="done"
+        value={confirmPassword.value}
+        onChangeText={(text) => setConfirmPassword({ value: text, error: "" })}
+        error={!!confirmPassword.error}
+        errorText={confirmPassword.error}
         autoComplete="off"
         secureTextEntry
       />

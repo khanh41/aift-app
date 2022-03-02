@@ -1,8 +1,8 @@
 import axios from "axios";
-import { apiUrl } from "../constants/API";
+import { API_URL } from "../constants/API";
 import { IExercise, IResponseAPI } from "../types/ResponseType";
 
-const API_URL = `${apiUrl}/admin/exercise`;
+const _API_URL = `${API_URL}/admin/exercise`;
 
 export interface IExerciseResponse extends IResponseAPI {
   data: IExercise[];
@@ -10,7 +10,7 @@ export interface IExerciseResponse extends IResponseAPI {
 
 export class ExerciseService {
   getAll() {
-    return axios.get<IExerciseResponse>(API_URL);
+    return axios.get<IExerciseResponse>(_API_URL);
   }
 
   get(id: string) {
@@ -39,7 +39,7 @@ export class ExerciseService {
     formData.append("file", photo);
 
     return axios.post<IResponseAPI>(
-      `${API_URL}/predict-form?exercise_code=${exerciseCode}&exercise_name=${exerciseName}`,
+      `${_API_URL}/predict-form?exercise_code=${exerciseCode}&exercise_name=${exerciseName}`,
       formData
     );
   }
@@ -54,7 +54,7 @@ export class ExerciseService {
     formData.append("file", video);
 
     return axios.post<IResponseAPI>(
-      `${API_URL}/predict-video?exercise_name=${exerciseName}`,
+      `${_API_URL}/predict-video?exercise_name=${exerciseName}`,
       formData
     );
   }

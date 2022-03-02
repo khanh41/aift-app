@@ -10,7 +10,7 @@ import { IExercise } from "./ResponseType";
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList { }
+    interface RootParamList extends RootStackParamList {}
   }
 }
 
@@ -21,6 +21,7 @@ export type RootStackParamList = {
   Register: undefined;
   ForgotPassword: undefined;
   BottomTabNavigator: undefined;
+  ProfileInformation: undefined;
   Modal: undefined;
   NotFound: undefined;
   DoExerciseStart: IExercise;
@@ -42,7 +43,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
 
 export type RootTabParamList = {
   Exercises: undefined;
-  TabTwo: undefined;
+  UserProfile: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =

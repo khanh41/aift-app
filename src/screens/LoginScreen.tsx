@@ -9,6 +9,7 @@ import { theme } from "../core/theme";
 import { emailValidator, passwordValidator } from "../core/utils";
 import { RootStackScreenProps } from "../types/types";
 import { Logo } from "../components/Images";
+import AuthService from "../services/AuthService";
 
 export default function LoginScreen({
   navigation,
@@ -16,7 +17,7 @@ export default function LoginScreen({
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
 
-  const _onLoginPressed = () => {
+  const _onLoginPressed = async () => {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
 
@@ -25,6 +26,16 @@ export default function LoginScreen({
       setPassword({ ...password, error: passwordError });
       return;
     }
+    
+    try{
+
+      const temp = await AuthService.login(email.value, password.value);
+    }
+    catch{
+      setPassword({ ...password, error: "Wrong email or password" });
+      return
+    }
+    console.log(await AuthService.getCurrentUser())
 
     navigation.navigate("BottomTabNavigator");
   };

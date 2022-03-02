@@ -1,6 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { Exercise } from "../components/Images";
 import ExerciseService, {
   IExerciseResponse,
@@ -41,20 +48,22 @@ export default function ExercisesScreen({
 
   const getExercisesName = () => {
     return (
-      <View style={styles.row}>
-        {exerciseList.map((value: IExercise) => (
-          <TouchableOpacity
-            key={value.name}
-            onPress={() => navigation.navigate("DoExerciseStart", value)}
-            style={[styles.button, styles.selected]}
-          >
-            {Exercise(value.name)}
-            <Text style={[styles.buttonLabel, styles.selectedLabel]}>
-              {value.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <ScrollView>
+        <View style={styles.row}>
+          {exerciseList.map((value: IExercise) => (
+            <TouchableOpacity
+              key={value.name}
+              onPress={() => navigation.navigate("DoExerciseStart", value)}
+              style={[styles.button, styles.selected]}
+            >
+              {Exercise(value.name)}
+              <Text style={[styles.buttonLabel, styles.selectedLabel]}>
+                {value.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
     );
   };
   return <View style={{ padding: 10, flex: 1 }}>{getExercisesName()}</View>;
@@ -73,8 +82,8 @@ const styles = StyleSheet.create({
     marginHorizontal: "3%",
     marginBottom: 20,
     width: "44%",
-    height: 100,
-    maxWidth: 340,
+    height: Dimensions.get("window").height / 7.2,
+    maxWidth: Dimensions.get("window").width / 2,
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
