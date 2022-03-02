@@ -1,17 +1,19 @@
 import axios from "axios";
+import { API_URL, BACKEND_URL } from "../constants/API";
+import { decode as atob, encode as btoa } from "base-64";
 
-const API_URL = "http://localhost:8080/api/auth/";
+const _API_URL = `${API_URL}`;
 
 class AuthService {
-  login(username: string, password: string) {
+  login(email: string, password: string) {
+    var basicAuth = "Basic " + btoa(email + ":" + password);
     return axios
-      .post(API_URL + "signin", {
-        username,
-        password,
+      .get(BACKEND_URL + "/login", {
+        headers: { Authorization: basicAuth },
       })
       .then((response: { data: { accessToken: any } }) => {
         if (response.data.accessToken) {
-          localStorage.setItem("user", JSON.stringify(response.data));
+          // localStorage.setItem("user", JSON.stringify(response.data));
         }
 
         return response.data;
@@ -19,22 +21,30 @@ class AuthService {
   }
 
   logout() {
-    localStorage.removeItem("user");
+    // localStorage.removeItem("user");
   }
 
-  register(username: string, email: string, password: string) {
-    return axios.post(API_URL + "signup", {
-      username,
-      email,
-      password,
-    });
+  register(email: string, password: string) {
+    return axios.post(
+      _API_URL + "/admin/user/",
+      JSON.stringify({
+        username: email,
+        password: password,
+        role: 0,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 
   getCurrentUser() {
-    const userStr = localStorage.getItem("user");
-    if (userStr) return JSON.parse(userStr);
+    // const userStr = localStorage.getItem("user");
+    // if (userStr) return JSON.parse(userStr);
 
-    return null;
+    // return null;
   }
 }
 

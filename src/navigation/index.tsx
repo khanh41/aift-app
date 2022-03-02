@@ -12,7 +12,9 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import { ColorSchemeName, Pressable } from "react-native";
+import { ColorSchemeName, Pressable, Text } from "react-native";
+import BackButton from "../components/BackButton";
+import LogoButton from "../components/Logo";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -30,7 +32,8 @@ import DoExerciseStartScreen from "../screens/DoExerciseStartScreen";
 import ExercisesScreen from "../screens/ExercisesScreen";
 import ModalScreen from "../screens/ModalScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
-import TabTwoScreen from "../screens/TabTwoScreen";
+import ProfileInformation from "../screens/ProfileInformation";
+import UserProfile from "../screens/UserProfile";
 import {
   RootStackParamList,
   RootTabParamList,
@@ -89,6 +92,12 @@ function RootNavigator() {
       />
 
       <Stack.Screen
+        name="ProfileInformation"
+        component={ProfileInformation}
+        options={{ title: "Information" }}
+      />
+
+      <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}
         options={{ title: "Oops!" }}
@@ -119,7 +128,7 @@ function RootNavigator() {
       <Stack.Screen
         name="DoExerciseInprocessStream"
         component={DoExerciseInprocessScreenStream}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -147,6 +156,9 @@ function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<"Exercises">) => ({
           title: "Exercises",
           tabBarIcon: ({ color }) => <TabBarIcon name="fire" color={color} />,
+          headerLeft: () => (
+            <LogoButton goBack={() => navigation.navigate("Exercises")} />
+          ),
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate("Modal")}
@@ -165,12 +177,30 @@ function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{
+        name="UserProfile"
+        component={UserProfile}
+        options={({ navigation }: RootTabScreenProps<"UserProfile">) => ({
           title: "User",
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-        }}
+          headerLeft: () => (
+            <LogoButton goBack={() => navigation.navigate("Exercises")} />
+          ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate("ProfileInformation")}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+            >
+              <FontAwesome
+                name="info-circle"
+                size={25}
+                color={Colors[colorScheme].text}
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+          ),
+        })}
       />
     </BottomTab.Navigator>
   );
