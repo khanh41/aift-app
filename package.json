@@ -1,5 +1,5 @@
 {
-  "name": "awesomeproject",
+  "name": "aift-app",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -44,7 +44,7 @@
     "react-native-step-indicator": "^1.0.3",
     "react-native-web": "0.17.1",
     "react-native-webrtc": "^1.75.3",
-    "react-router-dom": "^5.2.0"
+    "expo-updates": "~0.11.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

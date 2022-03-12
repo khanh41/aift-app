@@ -8,6 +8,7 @@ import {
   Button,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { View } from "../components/Themed";
 import { RootStackScreenProps } from "../types/types";
@@ -67,6 +68,7 @@ export default function DoExerciseInprocessScreen({
   const [numStar, setNumStar] = useState<number>(0);
   const [resultImage, setResultImage] = useState<string>("");
   const [visibleImage, setVisibleImage] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   let value = route.params.name;
   value = value.toLowerCase().split(" ").join("");
@@ -91,6 +93,7 @@ export default function DoExerciseInprocessScreen({
   };
 
   useEffect(() => {
+    setIsLoading(false);
     setIsSubmit(true);
     setImageUrl(firebaseImageUrl.replace(replaceText, value + currentStep));
     setPickedImagePath("");
@@ -103,13 +106,14 @@ export default function DoExerciseInprocessScreen({
   const submitPress = async () => {
     if (pickedImagePath != "") {
       try {
+        setIsLoading(true);
         // Call api and get link image, number star
-        const predicted_image: string = await predictForm();
-        setResultImage("data:image/png;base64," + predicted_image);
+        const predicted_image = await predictForm();
+        setResultImage("data:image/png;base64," + predicted_image?.image);
 
         setIsSubmit(false);
         setErrorText("");
-        setNumStar(3);
+        setNumStar(predicted_image?.score);
       } catch (error) {
         console.log(error);
       }
@@ -151,7 +155,11 @@ export default function DoExerciseInprocessScreen({
             )}
           </View>
           <View style={styles.fixToText}>
-            <Button title="Submit" color="#6ec965" onPress={submitPress} />
+            {isLoading && <ActivityIndicator size="large" color="#00ff00" />}
+
+            {!isLoading && (
+              <Button title="Submit" color="#6ec965" onPress={submitPress} />
+            )}
           </View>
         </View>
       );
