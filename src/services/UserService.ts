@@ -1,27 +1,16 @@
 import axios from "axios";
-import authHeader from "../constants/AuthHeader";
+import { API_URL } from "../constants/API";
+import { IExercise, IResponseAPI } from "../types/ResponseType";
 
-const API_URL = "http://localhost:8080/api/test/";
-
-// let  = {
-//   headers: authHeader(),
-// };
+const _API_URL = `${API_URL}/admin/user/me`;
 
 class UserService {
-  getPublicContent() {
-    return axios.get(API_URL + "all");
+  getHistoryImage() {
+    return axios.get<IResponseAPI>(_API_URL + "/image-history");
   }
 
-  getUserBoard() {
-    return axios.get(API_URL + "user");
-  }
-
-  getModeratorBoard() {
-    return axios.get(API_URL + "mod");
-  }
-
-  getAdminBoard() {
-    return axios.get(API_URL + "admin");
+  addHistoryImage(image_name: string) {
+    return axios.post<IResponseAPI>(_API_URL + "/image-history/" + image_name);
   }
 }
 

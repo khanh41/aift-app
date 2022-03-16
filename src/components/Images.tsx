@@ -1,5 +1,6 @@
 import React from "react";
 import { Image, StyleSheet } from "react-native";
+import { firebaseImageUrl, replaceText } from "../constants/API";
 
 export const Logo = () => (
   <Image
@@ -21,6 +22,6 @@ const styles = StyleSheet.create({
 
 export function Exercise(value: string) {
   value = value.toLowerCase().split(" ").join("");
-  value = `https://firebasestorage.googleapis.com/v0/b/aift-b7b2c.appspot.com/o/${value}.jpg?alt=media`;
+  value = firebaseImageUrl.replace(replaceText, value);
   return <Image source={{ uri: value }} style={styles.exercise} />;
 }

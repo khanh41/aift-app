@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -6,11 +6,18 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  RefreshControl,
 } from "react-native";
 import ImageViewer from "react-native-image-zoom-viewer";
 
 import { Text, View } from "../components/Themed";
+import { firebaseImageUrl, replaceText } from "../constants/API";
+import UserService from "../services/UserService";
 import { RootStackScreenProps } from "../types/types";
+
+interface IShowZoom {
+  url: string;
+}
 
 export default function UserProfile({
   navigation,
@@ -18,30 +25,46 @@ export default function UserProfile({
   const value =
     "https://quatangme.com/upload/images/he-lo-top-10-girl-xinh-van-nguoi-me.jpg";
 
-  const listImage = [
-    "https://recmiennam.com/wp-content/uploads/2020/10/tuyen-tap-bo-anh-girl-xinh-dep-nhat-nam-2020-15.jpg",
-    "https://itcafe.vn/wp-content/uploads/2021/01/anh-gai-xinh-3.jpg",
-    "https://hinhnen123.com/wp-content/uploads/2021/06/Tron-bo-99-hinh-anh-gai-xinh-va-quyen-ru-nhat-hien-nay.jpg",
-    "https://taimienphi.vn/tmp/cf/aut/anh-gai-xinh-1.jpg",
-    "https://thuthuatnhanh.com/wp-content/uploads/2019/05/gai-xinh-toc-ngan-facebook.jpg",
-    "https://www.dungplus.com/wp-content/uploads/2019/12/girl-xinh-1-480x600.jpg",
-    "https://kenh14cdn.com/2019/9/27/566226151661511044021668004432122225985389n-1569234596911848541502-1569517951952686128625.jpg",
-    "https://1.bp.blogspot.com/-wIaKEkcCTTk/XqjcK5-2a8I/AAAAAAAAk4k/opJSFhhMK2MXq51T3fXX8TaMUSW78alSgCEwYBhgL/s1600/hinh-nen-girl-xinh-4k-nu-cuoi-xinh-xan.jpg",
-    "https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/5eeea355389655.59822ff824b72.gif",
-  ];
-  const listShowZoom = [];
-  for (let index = 0; index < listImage.length; index++) {
-    const element = listImage[index];
-    listShowZoom.push({ url: element });
-  }
+  const [listImage, setListImage] = useState<Array<string>>([]);
+  const [listShowZoom, setListZoom] = useState<any>([]);
 
   const [userImage, setUserImage] = useState(value);
   const [visibleImage, setVisibleImage] = useState<boolean>(false);
   const [indexImage, setIndexImage] = useState(0);
+  const [refreshing, setRefreshing] = useState(true);
+
+  const getHistoryImage = async () => {
+    const response = await UserService.getHistoryImage();
+    const images = response.data.data;
+
+    let temp_images_url = [];
+    let temp_images_show_zoom_url = [];
+    for (let index = 0; index < images.length; index++) {
+      const element: string = firebaseImageUrl.replace(
+        replaceText,
+        images[index]
+      );
+      temp_images_url.push(element);
+      temp_images_show_zoom_url.push({ url: element });
+    }
+
+    setListImage(temp_images_url);
+    setListZoom(temp_images_show_zoom_url);
+    setRefreshing(false);
+  };
+
+  const onRefresh = () => {
+    setListImage([]);
+    setListZoom([]);
+    getHistoryImage();
+  };
+
+  useEffect(() => {
+    getHistoryImage();
+  }, []);
 
   const changImage = async () => {
     // API change image
-    // const response = await
     // return response.data.data;
   };
 
@@ -65,7 +88,11 @@ export default function UserProfile({
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.row}>
           {listImage.map((value: string) => (
             <TouchableOpacity

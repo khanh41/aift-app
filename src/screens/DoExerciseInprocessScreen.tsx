@@ -18,6 +18,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import StepIndicator from "react-native-step-indicator";
 import ExerciseService from "../services/ExerciseService";
 import ImageViewer from "react-native-image-zoom-viewer";
+import UserService from "../services/UserService";
 
 export default function DoExerciseInprocessScreen({
   route,
@@ -89,6 +90,7 @@ export default function DoExerciseInprocessScreen({
       return response.data.data;
     } catch {
       setErrorText("Please clear cut image and right direction");
+      setIsLoading(false)
     }
   };
 
@@ -109,7 +111,13 @@ export default function DoExerciseInprocessScreen({
         setIsLoading(true);
         // Call api and get link image, number star
         const predicted_image = await predictForm();
-        setResultImage("data:image/png;base64," + predicted_image?.image);
+
+        await UserService.addHistoryImage(predicted_image?.image);
+
+        setResultImage(
+          firebaseImageUrl.replace(replaceText, predicted_image?.image)
+        );
+        console.log(resultImage)
 
         setIsSubmit(false);
         setErrorText("");
