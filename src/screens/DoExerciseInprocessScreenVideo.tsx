@@ -50,8 +50,9 @@ export default function DoExerciseInprocessScreenVideo({
 
   let value = route.params.name;
   value = value.toLowerCase().split(" ").join("");
+  console.log(value);
   const [imageUrl, setImageUrl] = useState(
-    firebaseImageUrl.replace(replaceText, value)
+    firebaseImageUrl.replace(replaceText, value).replace(".jpg", ".gif")
   );
 
   const predictForm = async (nameStep: string) => {
@@ -59,7 +60,10 @@ export default function DoExerciseInprocessScreenVideo({
       nameStep,
       pickedImagePath
     );
-    return response.data.data;
+    if (response.status == 200) {
+      return response.data.data;
+    }
+    return "";
   };
 
   useEffect(() => {
@@ -70,16 +74,20 @@ export default function DoExerciseInprocessScreenVideo({
   const submitPress = async () => {
     if (pickedImagePath != "") {
       try {
+        setErrorText("");
         setIsLoading(true);
         // Call api and get link image, number star
         const video_id: string = await predictForm(route.params.name);
-        setResultVideo(video_id);
-        console.log(resultVideo);
-
-        setIsSubmit(false);
-        setErrorText("");
-        setIsLoading(false);
+        if (video_id != "") {
+          setResultVideo(video_id);
+          setIsSubmit(false);
+          setErrorText("");
+        } else {
+          setErrorText("Server is under maintain");
+          setIsLoading(false);
+        }
       } catch (error) {
+        setErrorText("Server is under maintain");
         setIsLoading(false);
         console.log(error);
       }
