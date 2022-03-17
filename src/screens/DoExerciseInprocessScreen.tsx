@@ -49,11 +49,11 @@ export default function DoExerciseInprocessScreen({
   const starComponent = (numStar: number) => {
     let starOutput = [];
     for (let index = 0; index < numStar; index++) {
-      starOutput.push(<FontAwesome name="star" size={30} color="yellow" />);
+      starOutput.push(<FontAwesome name="star" size={30} color="blue" />);
     }
 
     for (let index = numStar; index < 5; index++) {
-      starOutput.push(<FontAwesome name="star" size={30} color="black" />);
+      starOutput.push(<FontAwesome name="star-o" size={30} color="blue" />);
     }
 
     return starOutput;
@@ -87,10 +87,16 @@ export default function DoExerciseInprocessScreen({
         nameStep,
         pickedImagePath
       );
-      return response.data.data;
+      console.log(response)
+      if (response.status == 200) {
+        return response.data.data;
+      } else {
+        setErrorText("Server is under maintain");
+        setIsLoading(false);
+      }
     } catch {
       setErrorText("Please clear cut image and right direction");
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -98,6 +104,7 @@ export default function DoExerciseInprocessScreen({
     setIsLoading(false);
     setIsSubmit(true);
     setImageUrl(firebaseImageUrl.replace(replaceText, value + currentStep));
+    console.log(imageUrl);
     setPickedImagePath("");
   }, [currentStep]);
 
@@ -109,19 +116,19 @@ export default function DoExerciseInprocessScreen({
     if (pickedImagePath != "") {
       try {
         setIsLoading(true);
+        setErrorText("");
         // Call api and get link image, number star
         const predicted_image = await predictForm();
 
-        await UserService.addHistoryImage(predicted_image?.image);
-
-        setResultImage(
-          firebaseImageUrl.replace(replaceText, predicted_image?.image)
-        );
-        console.log(resultImage)
-
-        setIsSubmit(false);
-        setErrorText("");
-        setNumStar(predicted_image?.score);
+        if (predicted_image != undefined) {
+          await UserService.addHistoryImage(predicted_image?.image);
+          setResultImage(
+            firebaseImageUrl.replace(replaceText, predicted_image?.image)
+          );
+          setIsSubmit(false);
+          setErrorText("");
+          setNumStar(predicted_image?.score);
+        }
       } catch (error) {
         console.log(error);
       }
