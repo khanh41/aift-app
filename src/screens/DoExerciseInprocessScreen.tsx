@@ -36,7 +36,6 @@ export default function DoExerciseInprocessScreen({
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
@@ -49,11 +48,11 @@ export default function DoExerciseInprocessScreen({
   const starComponent = (numStar: number) => {
     let starOutput = [];
     for (let index = 0; index < numStar; index++) {
-      starOutput.push(<FontAwesome name="star" size={30} color="blue" />);
+      starOutput.push(<FontAwesome name="star" size={30} color="#d2e807" />);
     }
 
     for (let index = numStar; index < 5; index++) {
-      starOutput.push(<FontAwesome name="star-o" size={30} color="blue" />);
+      starOutput.push(<FontAwesome name="star-o" size={30} color="#d2e807" />);
     }
 
     return starOutput;
@@ -87,7 +86,6 @@ export default function DoExerciseInprocessScreen({
         nameStep,
         pickedImagePath
       );
-      console.log(response)
       if (response.status == 200) {
         return response.data.data;
       } else {

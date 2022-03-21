@@ -35,7 +35,6 @@ export default function LoginScreen({
       setPassword({ ...password, error: "Wrong email or password" });
       return
     }
-    console.log(await AuthService.getCurrentUser())
 
     navigation.navigate("BottomTabNavigator");
   };

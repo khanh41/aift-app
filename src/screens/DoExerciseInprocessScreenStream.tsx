@@ -8,7 +8,6 @@ export default function DoExerciseInprocessScreenStream({
   route,
   navigation,
 }: RootStackScreenProps<"DoExerciseInprocessStream">) {
-  console.log(route.params["name"]);
   const [hasPermission, setHasPermission] = useState<boolean>();
 
   useEffect(() => {
